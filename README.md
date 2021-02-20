@@ -5,6 +5,7 @@ This web scraper gets data from:
  * Market Watch
  * Seeking Alpha
  * Business Insider
+
 based on a list of keywords that might signify a positive change in stock prices.
 
 The scraper scraps, stores, and emails articles on the hour from 8am - 12am with an initial email having the most articles for you to read.
