@@ -133,7 +133,7 @@ class Scraper:
             self.email()  # sends email containing relevant links
 
         y = x + timedelta(hours=1)
-        y.replace(minute=0, second=0, microsecond=0)
+        y = y.replace(minute=0, second=0, microsecond=0)
         delta = y - x
         secs = delta.total_seconds()
         t = Timer(secs, self.start)
