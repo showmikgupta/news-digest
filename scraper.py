@@ -16,6 +16,7 @@ class Scraper:
         self.saved_links = []
         self.db = {}
         self.already_seen = []
+        self.send_email = True
 
     def filter_links(self, links):
         for link in links:
@@ -23,6 +24,15 @@ class Scraper:
             for keyword in self.keywords:
                 if keyword in link_text and link not in self.saved_links:
                     self.saved_links.append(link)
+
+    def parse(self):
+        for url in self.urls:
+            if "marketwatch" in url:
+                self.parse_marketwatch(url)
+            elif "seekingalpha" in url:
+                self.parse_seekingalpha(url)
+            elif "businessinsider" in url:
+                self.parse_businessinsider(url)
 
     def parse_marketwatch(self, url):
         markup = requests.get(url).text
@@ -108,19 +118,21 @@ class Scraper:
             print('Something went wrong... %s' % e)
 
     def start(self):
-        for url in self.urls:
-            if "marketwatch" in url:
-                self.parse_marketwatch(url)
-            elif "seekingalpha" in url:
-                self.parse_seekingalpha(url)
-            elif "businessinsider" in url:
-                self.parse_businessinsider(url)
-
-        self.store()
-        self.email()
+        self.parse()  # scrape data from websites
+        self.store()  # store relevant links in internal dictionary
 
         x = datetime.now()
+
+        if 0 < x.hour < 9:  # only send email between 9-12am
+            self.send_email = False
+        else:
+            self.send_email = True
+
+        if self.send_email:
+            self.email()  # sends email containing relevant links
+
         y = x + timedelta(hours=1)
+        y.replace(minute=0, second=0, microsecond=0)
         delta = y - x
         secs = delta.total_seconds()
         t = Timer(secs, self.start)
@@ -128,11 +140,12 @@ class Scraper:
 
     def clear_db(self):
         self.db.clear()
+        self.already_seen = []
         self.start_db_clear_timer()
 
     def start_db_clear_timer(self):
         x = datetime.now()
-        y = x + timedelta(days=1)
+        y = x.replace(hour=8, minute=30, second=0, microsecond=0) + timedelta(days=2)
         delta = y - x
         secs = delta.total_seconds()
         t = Timer(secs, self.clear_db)
