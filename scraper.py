@@ -87,35 +87,36 @@ class Scraper:
     def email(self):
         links = [self.db.get(k) for k in self.db.keys()]
 
-        # email
-        fromEmail = 'disruptstudionewsdigest@gmail.com'
-        toEmail = 'showmikgupta@gmail.com'
+        if len(links) > 0:  # only send out email if there is something to send
+            # email
+            fromEmail = 'disruptstudionewsdigest@gmail.com'
+            toEmail = 'showmikgupta@gmail.com'
 
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"Financial News Digest {datetime.today().strftime('%m-%d-%Y')}"
-        msg["From"] = fromEmail
-        msg["To"] = toEmail
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = f"Financial News Digest {datetime.today().strftime('%m-%d-%Y')}"
+            msg["From"] = fromEmail
+            msg["To"] = toEmail
 
-        html = """
-            <h4> %s  new articles:</h4>
+            html = """
+                <h4> %s  new articles:</h4>
+    
+                %s
+            """ % (len(links), '<br/><br/>'.join(links))
 
-            %s
-        """ % (len(links), '<br/><br/>'.join(links))
+            mime = MIMEText(html, 'html')
 
-        mime = MIMEText(html, 'html')
+            msg.attach(mime)
 
-        msg.attach(mime)
-
-        try:
-            mail = smtplib.SMTP('smtp.gmail.com', 587)
-            mail.ehlo()
-            mail.starttls()
-            mail.login(fromEmail, os.getenv('EMAIL_PASSWORD'))
-            mail.sendmail(fromEmail, toEmail, msg.as_string())
-            mail.quit()
-            print('Email sent!')
-        except Exception as e:
-            print('Something went wrong... %s' % e)
+            try:
+                mail = smtplib.SMTP('smtp.gmail.com', 587)
+                mail.ehlo()
+                mail.starttls()
+                mail.login(fromEmail, os.getenv('EMAIL_PASSWORD'))
+                mail.sendmail(fromEmail, toEmail, msg.as_string())
+                mail.quit()
+                print('Email sent!')
+            except Exception as e:
+                print('Something went wrong... %s' % e)
 
     def start(self):
         self.parse()  # scrape data from websites
