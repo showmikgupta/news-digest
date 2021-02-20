@@ -9,9 +9,10 @@ from threading import Timer
 
 
 class Scraper:
-    def __init__(self, keywords):
+    def __init__(self, keywords, urls):
         self.markup = requests.get('https://www.marketwatch.com/latest-news').text
         self.keywords = keywords
+        self.urls = urls
         self.saved_links = []
         self.db = {}
         self.already_seen = []
@@ -54,7 +55,6 @@ class Scraper:
                 new_articles[link.text] = str(link)
 
         self.db = new_articles
-        print(self.db)
 
     def email(self):
         links = [self.db.get(k) for k in self.db.keys()]
@@ -89,8 +89,8 @@ class Scraper:
         except Exception as e:
             print('Something went wrong... %s' % e)
 
-    def start(self, urls):
-        for url in urls:
+    def start(self):
+        for url in self.urls:
             if "marketwatch" in url:
                 self.parse_marketwatch(url)
             elif "seekingalpha" in url:

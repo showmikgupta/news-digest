@@ -10,9 +10,9 @@ def main():
     keywords = ['bitcoin', 'crypto', 'spac', 'gains', 'ghvi', 'merger', 'fda', 'archer', 'approval', 'asia', 'asian',
                 'nio', 'earnings', 'ev', 'electric vehicle', 'sell', 'acquire', 'acquisition', 'etf', 'startup',
                 'start-up', 'energy', 'green', 'deal', 'contract', 'ark', 'ark invest', 'cathie wood']
-    s = scraper.Scraper(keywords)
+    s = scraper.Scraper(keywords, urls)
     s.start_db_clear_timer()
-    s.start(urls)
+    s.start()
 
 
 if __name__ == "__main__":
