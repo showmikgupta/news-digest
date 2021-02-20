@@ -44,6 +44,24 @@ class Scraper:
 
         self.filter_links(links)
 
+    def parse_businessinsider(self, url):
+        markup = requests.get(url).text
+        soup = BeautifulSoup(markup, "html.parser")
+        latest_news = soup.find_all("a", {"class": "teaser-headline"})
+        links = []
+
+        for tag in latest_news:
+            tag['href'] = 'https://markets.businessinsider.com' + tag['href']
+            links.append(tag)
+
+        latest_news = soup.find_all("a", {"class": "news-link"})
+
+        for tag in latest_news:
+            tag['href'] = 'https://markets.businessinsider.com' + tag['href']
+            links.append(tag)
+
+        self.filter_links(links)
+
     def store(self):
         current_links = self.db.keys()
         new_articles = {}
@@ -95,6 +113,8 @@ class Scraper:
                 self.parse_marketwatch(url)
             elif "seekingalpha" in url:
                 self.parse_seekingalpha(url)
+            elif "businessinsider" in url:
+                self.parse_businessinsider(url)
 
         self.store()
         self.email()
