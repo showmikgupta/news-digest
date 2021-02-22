@@ -57,7 +57,8 @@ class Scraper:
     def parse_businessinsider(self, url):
         markup = requests.get(url).text  # get html from website
         soup = BeautifulSoup(markup, "html.parser")  # use html parser
-        latest_news = soup.find_all("a", {"class": "teaser-headline"})  # find all html 'a' tags with class=teaser-headline
+        latest_news = soup.find_all("a",
+                                    {"class": "teaser-headline"})  # find all html 'a' tags with class=teaser-headline
         links = []
 
         # loop through all 'a' tags and save the link to article
@@ -100,7 +101,7 @@ class Scraper:
 
             html = """
                 <h4> %s  new articles:</h4>
-    
+
                 %s
             """ % (len(links), '<br/><br/>'.join(links))
 
@@ -130,7 +131,6 @@ class Scraper:
         else:
             self.send_email = True
 
-        self.send_email = False
         if self.send_email:
             self.email()  # sends email containing relevant links
 
