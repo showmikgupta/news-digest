@@ -55,11 +55,12 @@ class Scraper:
         self.filter_links(links)
 
     def parse_businessinsider(self, url):
-        markup = requests.get(url).text
-        soup = BeautifulSoup(markup, "html.parser")
-        latest_news = soup.find_all("a", {"class": "teaser-headline"})
+        markup = requests.get(url).text  # get html from website
+        soup = BeautifulSoup(markup, "html.parser")  # use html parser
+        latest_news = soup.find_all("a", {"class": "teaser-headline"})  # find all html 'a' tags with class=teaser-headline
         links = []
 
+        # loop through all 'a' tags and save the link to article
         for tag in latest_news:
             tag['href'] = 'https://markets.businessinsider.com' + tag['href']
             links.append(tag)
@@ -129,11 +130,11 @@ class Scraper:
         else:
             self.send_email = True
 
+        self.send_email = False
         if self.send_email:
             self.email()  # sends email containing relevant links
 
-        y = x + timedelta(hours=1)
-        y = y.replace(minute=0, second=0, microsecond=0)
+        y = x.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
         delta = y - x
         secs = delta.total_seconds()
         t = Timer(secs, self.start)
@@ -142,11 +143,12 @@ class Scraper:
     def clear_db(self):
         self.db.clear()
         self.already_seen = []
+        self.saved_links = []
         self.start_db_clear_timer()
 
     def start_db_clear_timer(self):
         x = datetime.now()
-        y = x.replace(hour=8, minute=30, second=0, microsecond=0) + timedelta(days=2)
+        y = x.replace(hour=6, minute=30, second=0, microsecond=0) + timedelta(days=1)
         delta = y - x
         secs = delta.total_seconds()
         t = Timer(secs, self.clear_db)
